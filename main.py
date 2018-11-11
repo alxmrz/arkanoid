@@ -4,17 +4,27 @@ from src.Ball import *
 from src.Platform import *
 from src.Plate import *
 from settings import *
+import random
 
 
 def change_speed(ball, speed, collisioned = False):
     if not collisioned:
         if ball.x < 0 or ball.x > width:
             speed[0] = -speed[0]
-        if ball.y < 0 or ball.y > height:
+        if ball.y < 0:
             speed[1] = -speed[1]
+        if ball.y > height:
+            return False
     else:
-        speed[0] = -speed[0]
+        rand = random.randint(1,3)
+        if rand % 2 == 0:
+            speed[0] = -speed[0]-1
+        else:
+            speed[0] = -speed[0]+1
+
         speed[1] = -speed[1]
+
+    return True
 
 def draw_objects(screen, game_objects):
     for name, object in game_objects.items():
@@ -32,6 +42,13 @@ def destroy_collisioned(ball, objects):
             return True
 
     return False
+
+def show_game_over(screen):
+    myfont = pygame.font.SysFont('freesansbold.ttf', 50)
+    textsurface = myfont.render('Game over', True, (255, 255, 255))
+    textsurfaceRectObj = textsurface.get_rect()
+    textsurfaceRectObj.center = (500, 300)
+    screen.blit(textsurface, textsurfaceRectObj)
 
 pygame.init()
 
@@ -54,7 +71,8 @@ for row in range (3):
 
 
 running = True
-ball_up = False
+game_started = False
+game_over = False
 
 game_objects = {
     'ball' : ball,
@@ -68,33 +86,39 @@ while running:
             sys.exit()
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
-                ball_up = True
+                if not game_started:
+                    game_started = True
+                else:
+                    game_started = False
 
-    #If space pressed the real game starts
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_LEFT]:
-        platform.move(-2)
-    elif keys[pygame.K_RIGHT]:
-        platform.move(2)
+    if game_started:
+        #If space pressed the real game starts
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_LEFT]:
+            platform.move(-2)
+        elif keys[pygame.K_RIGHT]:
+            platform.move(2)
 
-    myball.move(speed)
-    change_speed(myball, speed)
-    change_speed(ball, ball_speed)
+        myball.move(speed)
+        change_speed(myball, speed)
+        if not change_speed(ball, ball_speed):
+            game_over = True
 
-    if destroy_collisioned(ball, game_objects['plates']):
-        change_speed(ball, ball_speed, True)
+        if destroy_collisioned(ball, game_objects['plates']):
+            change_speed(ball, ball_speed, True)
 
-    if platform.colliderect(ball.get_rect()):
-        change_speed(ball, ball_speed, True)
+        if platform.colliderect(ball.get_rect()):
+            change_speed(ball, ball_speed, True)
 
-    if ball_up:
-        ball.move(ball_speed)
-
+        if game_started:
+            ball.move(ball_speed)
 
     screen.fill(black)
 
+    if game_over:
+        show_game_over(screen)
+
     draw_objects(screen, game_objects)
     myball.draw(screen)
-
 
     pygame.display.flip()
