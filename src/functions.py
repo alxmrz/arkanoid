@@ -18,7 +18,7 @@ def change_speed(ball, speed, collisioned = False):
         else:
             speed[0] = -speed[0] + 1
 
-        if abs(speed[0]) > 3:
+        if abs(speed[0]) >= 1:
             speed[0] = 1
         speed[1] = -speed[1]
 
@@ -35,7 +35,6 @@ def draw_objects(screen, game_objects):
 def destroy_collisioned(ball, objects):
     for index, object in enumerate(objects):
         if object.colliderect(ball.get_rect()):
-            print ('destroy')
             del objects[index]
             return True
 

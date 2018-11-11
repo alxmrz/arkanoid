@@ -76,7 +76,6 @@ while running:
 
     if game_over:
         show_game_over(screen)
-
     draw_objects(screen, game_objects)
     myball.draw(screen)
 
