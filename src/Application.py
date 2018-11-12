@@ -16,7 +16,7 @@ class Application:
         self.game_objects = {
             'ball': None,
             'platform': None,
-            'plates': None
+            'plates': []
         }
 
     def run(self):
@@ -25,19 +25,19 @@ class Application:
         while self.running:
             self.handle_events()
             if self.game_started:
-                self.handle_platform_moving(self.game_objects['platform'])
-                if not change_speed(self.game_objects['ball']):
+                self.handle_platform_moving()
+                if not self.change_speed():
                     self.game_over = True
 
-                if destroy_collisioned(self.game_objects['ball'], self.game_objects['plates']):
-                    change_speed(self.game_objects['ball'], True)
+                if self.destroy_collisioned():
+                    self.change_speed_collisioned()
 
-                if self.game_objects['platform'].colliderect(self.game_objects['ball'].get_rect()):
-                    change_speed(self.game_objects['ball'], True)
+                if self.platform.colliderect(self.ball.get_rect()):
+                    self.change_speed_collisioned()
 
-                self.game_objects['ball'].move()
+                self.ball.move()
 
-            self.display_scene(self.game_objects)
+            self.display_scene()
 
     def init_window(self):
         pygame.init()
@@ -70,32 +70,77 @@ class Application:
                     else:
                         self.game_started = False
 
-    def handle_platform_moving(self, platform):
+    def handle_platform_moving(self):
         # If space pressed the real game starts
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT]:
-            platform.move(-2)
+            self.platform.move(-2)
         elif keys[pygame.K_RIGHT]:
-            platform.move(2)
+            self.platform.move(2)
 
-    def display_scene(self, game_objects):
+    def display_scene(self):
         self.screen.fill(black)
 
         if self.game_over:
-            show_game_over(self.screen)
-        draw_objects(self.screen, game_objects)
+            self.show_text('Game over', (500, 300))
+            self.show_text('Press [space] to start new game', (500, 450))
+        if not self.game_started:
+            self.show_text('Press [space] to start new game', (500, 300))
+        self.draw_objects()
 
         pygame.display.flip()
 
     def init_game_objects(self):
-        ball = Ball((500, 449))
-
-        platform = Platform((450, 470))
-
-        plates = self.create_plates_table()
+        self.ball = Ball((500, 449))
+        self.platform = Platform((450, 470))
+        self.plates = self.create_plates_table()
 
         self.game_objects = {
-            'ball': ball,
-            'platform': platform,
-            'plates': plates
+            'ball': self.ball,
+            'platform': self.platform,
+            'plates': self.plates
         }
+
+    def change_speed(self):
+        if self.ball.x < 0 or self.ball.x > width:
+            self.ball.speed[0] = -self.ball.speed[0]
+        if self.ball.y < 0:
+            self.ball.speed[1] = -self.ball.speed[1]
+        if self.ball.y > height:
+            return False
+
+        return True
+
+    def change_speed_collisioned(self):
+        rand = random.randint(1, 3)
+        if rand % 2 == 0:
+            self.ball.speed[0] = -self.ball.speed[0] - 1
+        else:
+            self.ball.speed[0] = -self.ball.speed[0] + 1
+
+        if abs(self.ball.speed[0]) >= 1:
+            self.ball.speed[0] = 1
+            self.ball.speed[1] = -self.ball.speed[1]
+
+    def draw_objects(self):
+        for name, object in self.game_objects.items():
+            if name == 'plates':
+                for plate in object:
+                    plate.draw(self.screen)
+            else:
+                object.draw(self.screen)
+
+    def destroy_collisioned(self):
+        for index, object in enumerate(self.plates):
+            if object.colliderect(self.ball.get_rect()):
+                del self.plates[index]
+                return True
+
+        return False
+
+    def show_text(self, text, coords):
+        myfont = pygame.font.SysFont('freesansbold.ttf', 50)
+        textsurface = myfont.render(text, True, (255, 255, 255))
+        textsurfaceRectObj = textsurface.get_rect()
+        textsurfaceRectObj.center = coords
+        self.screen.blit(textsurface, textsurfaceRectObj)
