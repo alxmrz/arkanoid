@@ -3,24 +3,24 @@ import random
 from settings import *
 
 
-def change_speed(ball, speed, collisioned = False):
+def change_speed(ball, collisioned = False):
     if not collisioned:
         if ball.x < 0 or ball.x > width:
-            speed[0] = -speed[0]
+            ball.speed[0] = -ball.speed[0]
         if ball.y < 0:
-            speed[1] = -speed[1]
+            ball.speed[1] = -ball.speed[1]
         if ball.y > height:
             return False
     else:
         rand = random.randint(1,3)
         if rand % 2 == 0:
-            speed[0] = -speed[0] -1
+            ball.speed[0] = -ball.speed[0] -1
         else:
-            speed[0] = -speed[0] + 1
+            ball.speed[0] = -ball.speed[0] + 1
 
-        if abs(speed[0]) >= 1:
-            speed[0] = 1
-        speed[1] = -speed[1]
+        if abs(ball.speed[0]) >= 1:
+            ball.speed[0] = 1
+            ball.speed[1] = -ball.speed[1]
 
     return True
 
