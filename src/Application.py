@@ -13,6 +13,7 @@ class Application:
         self.running = True
         self.game_started = False
         self.game_over = False
+        self.score = 0
         self.game_objects = {
             'ball': None,
             'platform': None,
@@ -83,9 +84,13 @@ class Application:
 
         if self.game_over:
             self.show_text('Game over', (500, 300))
+            self.show_text('Your score:' + str(self.score), (500, 400))
             self.show_text('Press [space] to start new game', (500, 450))
-        if not self.game_started:
+        elif not self.game_started:
             self.show_text('Press [space] to start new game', (500, 300))
+        else:
+            self.show_text('Score:' + str(self.score), (100, 550))
+
         self.draw_objects()
 
         pygame.display.flip()
@@ -134,6 +139,7 @@ class Application:
         for index, object in enumerate(self.plates):
             if object.colliderect(self.ball.get_rect()):
                 del self.plates[index]
+                self.score += 10
                 return True
 
         return False
