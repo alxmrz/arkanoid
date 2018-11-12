@@ -10,7 +10,6 @@ class Platform(pygame.Rect):
 
     def move(self, x):
         self.x +=x
-       # super().move(self.x, self.y)
 
     def draw(self, screen):
         pygame.draw.rect(screen, (255, 0, 0), [self.x, self.y, 50, 10])

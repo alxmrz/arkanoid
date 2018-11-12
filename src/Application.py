@@ -25,7 +25,7 @@ class Application:
         self.init_game_objects()
         while self.running:
             self.handle_events()
-            if self.game_started:
+            if self.game_started and not self.game_over:
                 self.handle_platform_moving()
                 if not self.change_speed():
                     self.game_over = True
@@ -34,7 +34,7 @@ class Application:
                     self.change_speed_collisioned()
 
                 if self.platform.colliderect(self.ball.get_rect()):
-                    self.change_speed_collisioned()
+                    self.change_speed_platform()
 
                 self.ball.move()
 
@@ -48,7 +48,7 @@ class Application:
     def create_plates_table(self):
         result = []
         y_row = 5
-        for row in range(3):
+        for row in range(9):
             x_row = 5
             for column in range(16):
                 result.append(Plate((x_row, y_row)))
@@ -74,22 +74,27 @@ class Application:
     def handle_platform_moving(self):
         # If space pressed the real game starts
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_LEFT]:
-            self.platform.move(-2)
-        elif keys[pygame.K_RIGHT]:
-            self.platform.move(2)
+        if keys[pygame.K_LEFT] and self.platform.x - 1 >= 0:
+            self.platform.move(-4)
+        elif keys[pygame.K_RIGHT] and self.platform.x + 101 <= width:
+            self.platform.move(4)
 
     def display_scene(self):
         self.screen.fill(black)
 
         if self.game_over:
-            self.show_text('Game over', (500, 300))
-            self.show_text('Your score:' + str(self.score), (500, 400))
+            self.show_text('Game over!', (500, 300))
+            self.show_text('Your score: ' + str(self.score), (500, 400))
             self.show_text('Press [space] to start new game', (500, 450))
         elif not self.game_started:
             self.show_text('Press [space] to start new game', (500, 300))
+        elif not self.game_objects['plates']:
+            self.game_over = True
+            self.show_text('You win!', (500, 300))
+            self.show_text('Your score: ' + str(self.score), (500, 400))
+            self.show_text('Press [space] to start new game', (500, 450))
         else:
-            self.show_text('Score:' + str(self.score), (100, 550))
+            self.show_text('Score: ' + str(self.score), (100, 550))
 
         self.draw_objects()
 
@@ -97,8 +102,9 @@ class Application:
 
     def init_game_objects(self):
         self.ball = Ball((500, 449))
-        self.platform = Platform((450, 470))
+        self.platform = Platform((450, 590))
         self.plates = self.create_plates_table()
+        self.score = 0
 
         self.game_objects = {
             'ball': self.ball,
@@ -117,15 +123,23 @@ class Application:
         return True
 
     def change_speed_collisioned(self):
-        rand = random.randint(1, 3)
-        if rand % 2 == 0:
-            self.ball.speed[0] = -self.ball.speed[0] - 1
-        else:
-            self.ball.speed[0] = -self.ball.speed[0] + 1
+        self.ball.speed[0] = random.randint(-1, 1) * 2
+        self.ball.speed[1] = random.randint(-1, 1) * 2
 
-        if abs(self.ball.speed[0]) >= 1:
+        if self.ball.speed[0] == 0:
             self.ball.speed[0] = 1
-            self.ball.speed[1] = -self.ball.speed[1]
+        elif self.ball.speed[1] == 0:
+            self.ball.speed[1] = 1
+
+    def change_speed_platform(self):
+        if self.ball.x <= self.platform.x + 25:
+            self.ball.speed = [-2, -1]
+        elif self.ball.x <= self.platform.x + 50:
+            self.ball.speed = [-1, -1]
+        elif self.ball.x <= self.platform.x + 75:
+            self.ball.speed = [1, -1]
+        elif self.ball.x <= self.platform.x + 100:
+            self.ball.speed = [2, -1]
 
     def draw_objects(self):
         for name, object in self.game_objects.items():
