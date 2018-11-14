@@ -9,7 +9,6 @@ class ApplicationTest(unittest.TestCase):
     def setUp(self):
         self.myc = Application()
 
-
     def tearDown(self):
         self.myc = None
 

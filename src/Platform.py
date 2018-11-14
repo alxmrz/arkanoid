@@ -1,4 +1,3 @@
-from settings import black
 import pygame
 
 
