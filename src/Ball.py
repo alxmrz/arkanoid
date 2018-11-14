@@ -1,6 +1,6 @@
 import pygame
 import random
-
+from src.Window import *
 
 class Ball():
 

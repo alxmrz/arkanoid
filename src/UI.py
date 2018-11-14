@@ -33,8 +33,8 @@ class UI:
         :param coords: list
         :return: None
         """
-        myfont = pygame.font.SysFont('freesansbold.ttf', 50)
-        textsurface = myfont.render(text, True, (255, 255, 255))
+        font = pygame.font.SysFont('freesansbold.ttf', 50)
+        textsurface = font.render(text, True, (255, 255, 255))
         textsurfaceRectObj = textsurface.get_rect()
         textsurfaceRectObj.center = coords
-        self.app.window .screen.blit(textsurface, textsurfaceRectObj)
+        self.app.window.screen.blit(textsurface, textsurfaceRectObj)

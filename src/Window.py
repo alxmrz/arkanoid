@@ -12,7 +12,7 @@ class Window():
         self.app = app
         self.screen = None
         self.colors = {
-            'black' : (0, 0, 0)
+            'black': (0, 0, 0)
         }
 
     def init(self):
