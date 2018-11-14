@@ -11,6 +11,9 @@ class Window():
         self.UI = UI(app)
         self.app = app
         self.screen = None
+        self.colors = {
+            'black' : (0, 0, 0)
+        }
 
     def init(self):
         """
@@ -23,10 +26,10 @@ class Window():
 
     def display(self):
         """
-        Display the game, including UI
+        Display scnene, objects and ui
         :return: None
         """
-        self.screen.fill(self.app.colors['black'])
+        self.screen.fill(self.colors['black'])
 
         self._draw_scene_objects()
         self.UI.show()

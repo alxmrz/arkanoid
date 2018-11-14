@@ -1,5 +1,4 @@
 import sys
-import random
 import pygame
 from src.Ball import *
 from src.Platform import *
@@ -14,9 +13,6 @@ class Application:
         self.game_over = False
         self.score = 0
         self.window = Window(self, 900, 600, 'Arkanoid')
-        self.colors = {
-            'black' : (0, 0, 0)
-        }
         self.game_objects = {
             'ball': None,
             'platform': None,
@@ -98,7 +94,7 @@ class Application:
 
     def _init_game_objects(self):
         """
-        Init start game state
+        Init primary game state
         :return: None
         """
         self.ball = Ball(self, (500, 449))
@@ -115,7 +111,7 @@ class Application:
     def _destroy_collided_plates(self):
         """
         Destroy collided object and increment score
-        If non object can be destroyed return False
+        If no one object can be destroyed return False
         :return: bool
         """
         for index, object in enumerate(self.plates):
