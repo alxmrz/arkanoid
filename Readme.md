@@ -1,4 +1,4 @@
-#Arkanoid#
+# Arkanoid
 
 A minimalistic arkanoid-like game.
 
